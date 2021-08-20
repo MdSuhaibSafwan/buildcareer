@@ -1,11 +1,15 @@
 import os
 from pathlib import Path
+import environ
+
+env = environ.Env()
+environ.Env.read_env()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-)28zqq*$sb26ae=4&#k$2l_s50&bz=3p3k=*z@+sn&c)hn*loc'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
-DEBUG = True
+DEBUG = os.environ.get("DEBUG") == "True"
 
 ALLOWED_HOSTS = ["127.0.0.1", "buildcareer.herokuapp.com", "localhost"]
 
@@ -104,11 +108,12 @@ WSGI_APPLICATION = 'build_career.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'd4abf5hmiikjf4',
-        'HOST': 'ec2-52-1-115-6.compute-1.amazonaws.com',
-        'USER': 'oaixfjvttbxqwy',
-        'PASSWORD': 'b1df6f3cffca7d34cefc6aa5b55bab9ead8f32bfe9f3aaaebd767bd956a69e0e'
+        'ENGINE': os.environ.get("DATABASE_BACKEND"),
+        'NAME': os.environ.get("DATABASE_NAME"),
+        'HOST': os.environ.get("DATABASE_HOST"),
+        'USER': os.environ.get("DATABASE_USER"),
+        'PASSWORD': os.environ.get("DATABASE_PASSWORD"),
+        'PORT': int(os.environ.get("DATABASE_PORT"))
     }
 }
 
