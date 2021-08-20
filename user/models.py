@@ -2,17 +2,54 @@ from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 
+class UserManager(BaseUserManager):
+
+    def create_user(self, email, password=None, first_name=None, last_name=None, save=True):
+        if not password:
+            raise ValueError("User should always have a password")
+
+        email = self.normalize_email(email)
+        user = self.model(
+            email=email
+        )
+
+        user.set_password(password)
+        user.first_name = first_name or str(email).split("@")[0]
+        user.last_name = last_name or str(email).split("@")[0]
+
+        if save:
+            user.save(using=self._db)
+
+        return user
+
+    def create_superuser(self, email, password=None):
+        user = self.create_user(email=email, password=password, save=False)
+        user.staff = True
+        self.superuser = True
+        user.save(using=self._db)
+        return user
+
+    def create_staffuser(self, email, password=None):
+        user = self.create_user(email=email, password=password, save=False)
+        user.staff = True
+        self.superuser = False
+        user.save(using=self._db)
+        return user
+
+
 class User(AbstractBaseUser):
     email = models.EmailField(unique=True, verbose_name="email_address", max_length=150)
     first_name = models.CharField(max_length=100, null=True)
     last_name = models.CharField(max_length=100, null=True)
-    active = models.BooleanField(default=False)
+    active = models.BooleanField(default=True)
     staff = models.BooleanField(default=False)
     superuser = models.BooleanField(default=False)
 
     USERNAME_FIELD = "email"
 
     REQUIRED_FIELDS = []  # EMAIL AND PASSWORD ARE SET BY DEFAULT
+
+    objects = UserManager()
 
     def __str__(self):
         return self.email
