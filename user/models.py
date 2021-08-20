@@ -25,14 +25,15 @@ class UserManager(BaseUserManager):
     def create_superuser(self, email, password=None):
         user = self.create_user(email=email, password=password, save=False)
         user.staff = True
-        self.superuser = True
+
+        user.superuser = True
         user.save(using=self._db)
         return user
 
     def create_staffuser(self, email, password=None):
         user = self.create_user(email=email, password=password, save=False)
         user.staff = True
-        self.superuser = False
+        user.superuser = False
         user.save(using=self._db)
         return user
 
@@ -63,7 +64,7 @@ class User(AbstractBaseUser):
     def has_perm(self, perm, obj=None):
         return True  # will be doing it later
 
-    def has_module_perm(self, app_label):
+    def has_module_perms(self, app_label):
         return True  # will be doing it later
 
     @property
