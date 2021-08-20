@@ -1,0 +1,1 @@
+web: gunicorn build_career.wsgi --log-file -
